@@ -9,6 +9,8 @@ let user;
 
 // function to add new todo item
 const addTodo = () => {
+    // number of todo items cannot exceed 5
+    // if so, the user sees and alert
     if (todoArray.size != 5) {
         if (todoInput.value != '') {
             todoInput.parentElement.classList.remove('error')
@@ -16,8 +18,8 @@ const addTodo = () => {
 
             if (user) {
                 let db = [...todoArray]
-                let _db = (JSON.stringify(db))
-                localStorage.setItem(user, _db)
+                let _db = (JSON.stringify(db))      // spreads the content of todoArray into db
+                localStorage.setItem(user, _db)     // _db is the string form of db array
                 setTodo(todoArray)
 
             } else {
@@ -42,26 +44,26 @@ todoInput.addEventListener('keypress', (e) => {
     if (e.key == 'Enter') addTodo()
 })
 
-
+// function to decide button actions
 todoList.addEventListener('click', (e) => {
 
     let target = e.target
-    let item = target.parentElement.parentElement
+    let item = target.parentElement.parentElement   // this targets the li element itself
     let itemID = item.id
 
     if (target.innerText === 'Edit') {
-        editTodo(item, itemID)
+        editTodo(item)
 
     } else if (target.innerText === 'Save') {
-        updateTodo(item, itemID)
+        updateTodo(item)
 
     } else if (target.innerText === 'Delete') {
         let delItem = item.querySelector('p').innerText
 
         if (user) {
             todoArray.delete(delItem)
-            let db = [...todoArray]
-            let _db = (JSON.stringify(db))
+            let db = [...todoArray]              // spreads the content of todoArray into db
+            let _db = (JSON.stringify(db))       // _db is the string form of db array
             localStorage.setItem(user, _db)
             setTodo(todoArray)
 
@@ -90,6 +92,7 @@ const informText = () => {
 const setTodo = (arr) => {
     let htmlArr = '';
 
+    // alternatively, a map function could be used
     for (el of arr) {
         let html =
             `<li id=${el}>
@@ -113,86 +116,83 @@ const setTodo = (arr) => {
 
 
 // edit todo function
-const editTodo = (el, id) => {
+const editTodo = (target) => {
     let taskItem = el.querySelector('p')
     let newInput = el.querySelector('input[type=text]')
     let edBtn = el.querySelectorAll('button')[0]
     let saveBtn = el.querySelectorAll('button')[1]
     let delBtn = el.querySelectorAll('button')[2]
 
-    if (taskItem.closest('li').id === id) {
+    newInput.value = taskItem.innerText     // pre-populate the input with the old text
 
-        newInput.value = taskItem.innerText
+    // switching classes to hide & to show appropriate elements
+    newInput.classList.remove('hide')
+    saveBtn.classList.remove('hide')
 
-        newInput.classList.remove('hide')
-        saveBtn.classList.remove('hide')
+    newInput.classList.add('edit-mode')
+    taskItem.classList.add('hide')
+    edBtn.classList.add('hide')
+    delBtn.classList.add('hide')
 
-        newInput.classList.add('edit-mode')
-        taskItem.classList.add('hide')
-        edBtn.classList.add('hide')
-        delBtn.classList.add('hide')
+    saveBtn.addEventListener('click', () => updateTodo(target))
 
-        saveBtn.addEventListener('click', () => updateTodo(el, id))
-
-        newInput.addEventListener('keypress', (e) => {
-            if (e.key == 'Enter') updateTodo(el, id)
-        })
-    }
+    newInput.addEventListener('keypress', (e) => {
+        if (e.key == 'Enter') updateTodo(el)
+    })
 }
 
 
 // update todo function
-const updateTodo = (el, id) => {
-    let taskItem = el.querySelector('p')
-    let newInput = el.querySelector('input[type=text]')
-    let edBtn = el.querySelectorAll('button')[0]
-    let saveBtn = el.querySelectorAll('button')[1]
-    let delBtn = el.querySelectorAll('button')[2]
+const updateTodo = (target) => {
+    let taskItem = target.querySelector('p')
+    let newInput = target.querySelector('input[type=text]')
+    let edBtn = target.querySelectorAll('button')[0]
+    let saveBtn = target.querySelectorAll('button')[1]
+    let delBtn = target.querySelectorAll('button')[2]
 
-    if (taskItem.closest('li').id === id && newInput.value !== '') {
+    if (newInput.value !== taskItem.innerText) {
+        if (user) {
+            let newChild = createNode(newInput.value)
+            let oldChild = taskItem.closest('li')
 
-        if (newInput.value !== taskItem.innerText) {
-            if (user) {
-                let newChild = createNode(newInput.value)
-                let oldChild = taskItem.closest('li')
+            todoList.replaceChild(newChild, oldChild)
 
-                todoList.replaceChild(newChild, oldChild)
+            todoArray.delete(taskItem.innerText)    // removing the edited text from the todo array
+            todoArray.add(newInput.value)           // adding the new text to todo array
 
-                todoArray.delete(taskItem.innerText)
-                todoArray.add(newInput.value)
-
-                let db = [...todoArray]
-                let _db = (JSON.stringify(db))
-                localStorage.setItem(user, _db)
-
-            } else {
-                let newChild = createNode(newInput.value)
-                let oldChild = taskItem.closest('li')
-
-                todoList.replaceChild(newChild, oldChild)
-
-                todoArray.delete(taskItem.innerText)
-                todoArray.add(newInput.value)
-            }
+            let db = [...todoArray]
+            let _db = (JSON.stringify(db))
+            localStorage.setItem(user, _db)
 
         } else {
-            taskItem.innerText = newInput.value
+            let newChild = createNode(newInput.value)
+            let oldChild = taskItem.closest('li')
 
+            todoList.replaceChild(newChild, oldChild)
+
+            todoArray.delete(taskItem.innerText)
+            todoArray.add(newInput.value)
         }
 
-        newInput.classList.remove('edit-mode')
-        taskItem.classList.remove('hide')
-        edBtn.classList.remove('hide')
-        delBtn.classList.remove('hide')
+    } else {
+        taskItem.innerText = newInput.value
 
-        newInput.classList.add('hide')
-        edBtn.classList.add('edit')
-        delBtn.classList.add('delete')
-        saveBtn.classList.add('hide')
     }
+
+    // switching classes to hide & to show appropriate elements
+    newInput.classList.remove('edit-mode')
+    taskItem.classList.remove('hide')
+    edBtn.classList.remove('hide')
+    delBtn.classList.remove('hide')
+
+    newInput.classList.add('hide')
+    edBtn.classList.add('edit')
+    delBtn.classList.add('delete')
+    saveBtn.classList.add('hide')
 }
 
 
+// this functions creates an HTML node to replace the edited one
 const createNode = (val) => {
     let nodeChild = document.createElement('li')
     nodeChild.setAttribute('id', val)
@@ -213,7 +213,7 @@ const createNode = (val) => {
 }
 
 
-// signer
+// sign in functions
 const signIn = document.querySelector('.logo-wrap p')
 const modal = document.querySelector('#modal')
 const userNm = modal.querySelector('input')
@@ -234,6 +234,8 @@ modal.addEventListener('click', (e) => {
     e.target == modal ? modal.style.display = 'none' : null
 })
 
+
+// function to log in user and save todo list
 signBtn.addEventListener('click', () => {
     user = userNm.value
 
@@ -242,8 +244,8 @@ signBtn.addEventListener('click', () => {
 
     } else {
         userNm.classList.remove('error')
-        signIn.innerText = user
-        todoArray.clear()
+        signIn.innerText = user     // changing the 'Sign in' text to the username
+        todoArray.clear()           // empty the array before another user signs in on the same device
         setTodo(todoArray)
         userNm.value = ''
 
