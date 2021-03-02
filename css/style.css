@@ -132,7 +132,7 @@ main ul li button {
   text-align: center;
   border-radius: 3px;
   color: #ff9600;
-  box-shadow: 0 1.5px #999;
+  box-shadow: 0 1.5px grey;
   transition: color 0.7s ease-in-out;
 }
 
@@ -177,15 +177,16 @@ main .save {
   display: flex;
   flex-direction: column;
   padding: 0 30px;
-  margin: 0 auto;
+  margin: auto;
   width: 500px;
+  height: 50%;
   border-radius: 5px;
-  box-shadow: 0 0 2px black;
+  box-shadow: 0 0 2px grey;
 }
 
 #modal span {
   width: 10%;
-  color: black;
+  color: grey;
   font-size: 50px;
   text-align: center;
   right: 0;
@@ -196,7 +197,6 @@ main .save {
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding: 70px 0;
 }
 
 #modal .sign-in * {
@@ -208,8 +208,7 @@ main .save {
   text-align: center;
   border-radius: 5px;
   background-color: transparent;
-  width: 90%;
-  height: 70px;
+  width: 95%;
   margin: 10px auto;
 }
 

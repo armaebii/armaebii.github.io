@@ -117,11 +117,11 @@ const setTodo = (arr) => {
 
 // edit todo function
 const editTodo = (target) => {
-    let taskItem = el.querySelector('p')
-    let newInput = el.querySelector('input[type=text]')
-    let edBtn = el.querySelectorAll('button')[0]
-    let saveBtn = el.querySelectorAll('button')[1]
-    let delBtn = el.querySelectorAll('button')[2]
+    let taskItem = target.querySelector('p')
+    let newInput = target.querySelector('input[type=text]')
+    let edBtn = target.querySelectorAll('button')[0]
+    let saveBtn = target.querySelectorAll('button')[1]
+    let delBtn = target.querySelectorAll('button')[2]
 
     newInput.value = taskItem.innerText     // pre-populate the input with the old text
 
@@ -227,7 +227,6 @@ signIn.addEventListener('click', () => {
 
 disModal.addEventListener('click', (e) => {
     modal.style.display = 'none'
-    console.log(e.target)
 })
 
 modal.addEventListener('click', (e) => {
